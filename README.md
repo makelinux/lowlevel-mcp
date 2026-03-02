@@ -51,8 +51,24 @@ List all processes whose CPU affinity allows them to run on a specified CPU.
 |------|------|----------|-------------|
 | `cpu` | int | Yes | CPU number (0-based) |
 
+
 **Returns:** A list of PIDs and process names for every process allowed to run
+on the given CPU. If there is no process name found, it will be listed as
+`<undefined>`.
+
+### `list_irqs_for_cpu`
+
+List all IRQs whose CPU affinity allows them to run on a specified CPU.
+
+**Parameters:**
+
+| Name | Type | Required | Description |
+|------|------|----------|-------------|
+| `cpu` | int | Yes | CPU number (0-based) |
+
+**Returns:** A list of IRQ numbers and process names for every IRQ allowed to run
 on the given CPU.
+
 
 ### `read_msr_register`
 

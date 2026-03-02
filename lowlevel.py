@@ -8,7 +8,9 @@ import sys
 import os
 from fastmcp import FastMCP
 import cpu_intersect
+import list_allowed_irqs_per_cpu
 import list_allowed_processes_per_cpu
+
 import autodoc
 
 # Initialize FastMCP server
@@ -79,6 +81,36 @@ def list_processes_for_cpu(
         output.append(f"{pid:>6}  {name}")
 
     return "\n".join(output)
+
+
+@mcp.tool(annotations={
+            "readOnlyHint": True,
+            "destructiveHint": False
+            }
+)
+def list_irqs_for_cpu(
+        cpu: Annotated[int, "CPU number (0-based)"]
+    ) -> str:
+    """List all IRQs that are allowed to run on specified CPU.
+
+    Args:
+        cpu: CPU number (0-based)
+
+    Returns:
+        List of IRQs and process names for the specified CPU. If no process
+        name is found, it will be listed as <undefined>.
+    """
+    procs = list_allowed_irqs_per_cpu.get_irq_for_cpu(cpu)
+
+    if not procs:
+        return f"No IRQs found for CPU {cpu}"
+
+    output = [f"IRQs allowed on CPU {cpu} ({len(procs)} total):"]
+    for irq, name in procs:
+        output.append(f"{irq:>6}  {name}")
+
+    return "\n".join(output)
+
 
 @mcp.tool(annotations={
             "readOnlyHint": True,
