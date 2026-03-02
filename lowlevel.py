@@ -14,7 +14,14 @@ import list_allowed_processes_per_cpu
 import autodoc
 
 # Initialize FastMCP server
-mcp = FastMCP("lowlevel")
+mcp = FastMCP(
+    name="lowlevel",
+    instructions="""
+        This server provices access to low-level information from OpenShift
+        nodes, such: as CPU affinity for IRQs and processes, ethtool read-only
+        queries and MSR CPU register information.
+    """,
+)
 
 @mcp.tool()
 def find_cpu_intersections(
