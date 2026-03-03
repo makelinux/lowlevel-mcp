@@ -101,6 +101,18 @@ and will not change any network interface configuration.
 
 **Returns:** The raw ethtool command output.
 
+## Testing
+
+### End-to-end test
+
+Test the lowlevel-mcp integration with OpenShift Lightspeed:
+
+```bash
+cd test && ./test-e2e.sh
+```
+
+See [test/E2E-TEST.md](test/E2E-TEST.md) for details.
+
 ## Dependencies
 
 - [FastMCP](https://gofastmcp.com/) (>= 3.0.0b2) -- MCP server and client framework
