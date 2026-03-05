@@ -168,6 +168,61 @@ def query_ethtool(
         return f"Error: {r.stderr}"
     return r.stdout
 
+@mcp.tool(annotations={
+            "readOnlyHint": True,
+            "destructiveHint": False
+            }
+)
+def check_dpdk_performance(
+        interface: Annotated[str, "Network interface name (e.g., eth0, ens6f0np0)"]
+    ) -> str:
+    """Comprehensive DPDK/SR-IOV performance diagnostic.
+
+    Checks critical system parameters affecting DPDK/testpmd performance:
+    - CPU governor, C-states, turbo boost
+    - CPU isolation and IRQ affinity
+    - Hugepages configuration
+    - NIC settings (ring buffers, offloads, queues)
+    - Thermal throttling
+    - NUMA alignment
+    - Tuned profile
+
+    Args:
+        interface: Network interface name
+
+    Returns:
+        Performance diagnostic report with issues and recommendations
+    """
+    import dpdk_perf_check
+
+    checks = [
+        ('CPU Governor', dpdk_perf_check.check_cpu_governor()),
+        ('C-states', dpdk_perf_check.check_cstates()),
+        ('Turbo Boost', dpdk_perf_check.check_turbo_boost()),
+        ('Hugepages', dpdk_perf_check.check_hugepages()),
+        ('IRQ Affinity', dpdk_perf_check.check_irq_affinity(interface)),
+        ('NIC Settings', dpdk_perf_check.check_nic_settings(interface)),
+        ('Thermal Throttle', dpdk_perf_check.check_thermal_throttle()),
+        ('NUMA Alignment', dpdk_perf_check.check_numa_alignment(interface)),
+        ('Tuned Profile', dpdk_perf_check.check_tuned_profile()),
+    ]
+
+    output = [f'DPDK Performance Diagnostic - {interface}\n']
+    total_issues = 0
+
+    for name, issues in checks:
+        output.append(f'{name}:')
+        if issues:
+            for issue in issues:
+                output.append(f'  ⚠ {issue}')
+            total_issues += len(issues)
+        else:
+            output.append('  ✓ OK')
+        output.append('')
+
+    output.append(f'Total issues: {total_issues}')
+    return '\n'.join(output)
+
 
 if __name__ == "__main__":
     if len(sys.argv) > 1:
